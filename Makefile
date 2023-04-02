@@ -24,8 +24,7 @@ img_target := $(BUILD_DIR)/xkern-$(ARCH).iso
 kernel: $(kernel_target)
 
 $(kernel_target): binary_linker boot kernel_main
-	$(LD) $(LDFLAGS) -o $(kernel_target) \
-		-T arch/$(ARCH)/linker.ld $(BUILD_DIR)/*.o
+	$(LD) $(LDFLAGS) -o $(kernel_target) -T arch/$(ARCH)/linker.ld $(BUILD_DIR)/*.o
 
 binary_linker: arch/$(ARCH)/linker.ld
 

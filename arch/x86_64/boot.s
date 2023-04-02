@@ -28,7 +28,6 @@ _start:
   // TODO: setup paging
   call kernel_main
   cli
-
 hltLoop:
   hlt
   jmp hltLoop
