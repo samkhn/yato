@@ -1,0 +1,32 @@
+TODO xkern
+
+TODO: setup acpi/aml?
+TODO: setup gdb/serial port
+
+To setup a flash drive,
+zero out the partition table for the usb drive:
+$ dd if=/dev/zero of/=/dev/sdx bs=512 count=4
+reformat:
+$ sudo mkfs.vfat -F 32 -n YourLabel -I /dev/sdx
+install grub bootloader onto device:
+$ mount /dev/sdx2 /mnt/usbp2
+$ sudo grub-install --boot-directory /mnt/usbp2/boot /dev/sdx2
+make sure these dirs are real
+/mnt/usbp2/boot/grub/{fonts,i386-pc,local,grubenv}
+create grub.cfg file for the OSs on the host pc
+sudo grub-mkconfig --output=/mnt/usbp2/boot/grub/grub.cfg
+Check wiki.osdev.org/GRUB
+
+TODO: kernel_main
+sets up interrupt table
+sets up paging
+sets up scheduler
+detect hardware w/ ACPI (video, file systems, network I/O)
+	setup each device as a server that any binary can query and enqueue tasks to
+
+Print string/int (decimal and hex) to screen
+Setup serial port
+Have working interrupt/exception system that dumps registers
+Memory map and where data should be
+Alloc memory at runtime
+
