@@ -16,7 +16,7 @@ LD := ld
 LDFLAGS := -melf_x86_64
 
 AS := as
-ASFLAGS := -64
+ASFLAGS := --64
 
 kernel_target := $(BUILD_DIR)/xkern-$(ARCH).bin
 img_target := $(BUILD_DIR)/xkern-$(ARCH).iso
