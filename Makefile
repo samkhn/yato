@@ -1,4 +1,4 @@
-# xkern
+# yato
 
 export SHELL := /bin/bash -o pipefail
 
@@ -10,16 +10,16 @@ OS = $(shell uname -s)
 BUILD_DIR := $(CURDIR)/build
 
 CC := gcc
-CFLAGS = -m64 -Wall -Werror -c -ffreestanding -O2 -lgcc
+CFLAGS = -m32 -Wall -Werror -c -ffreestanding -O2 -lgcc
 
 LD := ld
-LDFLAGS := -melf_x86_64
+LDFLAGS := -melf_i386
 
 AS := as
-ASFLAGS := --64
+ASFLAGS := --32
 
-kernel_target := $(BUILD_DIR)/xkern-$(ARCH).bin
-img_target := $(BUILD_DIR)/xkern-$(ARCH).iso
+kernel_target := $(BUILD_DIR)/yato-$(ARCH).bin
+img_target := $(BUILD_DIR)/yato-$(ARCH).iso
 
 kernel: $(kernel_target)
 
@@ -33,7 +33,7 @@ boot: arch/$(ARCH)/boot.s
 	$(AS) $(ASFLAGS) arch/$(ARCH)/boot.s -o $(BUILD_DIR)/boot.o
 
 kernel_main: arch/$(ARCH)/kernel_main.c
-	$(CC) $(CFLAGS) arch/$(ARCH)/kernel_main.c -o $(BUILD_DIR)/kernel_main.o
+	$(CC) $(CFLAGS) arch/$(ARCH)/kernel_main.c -I . -o $(BUILD_DIR)/kernel_main.o
 
 img: $(img_target)
 
@@ -41,7 +41,7 @@ $(img_target): kernel
 	@mkdir -p $(BUILD_DIR)/isofiles/boot/grub
 	@cp $(kernel_target) $(BUILD_DIR)/isofiles/boot/kernel.bin
 	@cp arch/$(ARCH)/grub.cfg $(BUILD_DIR)/isofiles/boot/grub
-	@grub-mkrescue -o $(img_target) $(BUILD_DIR)/isofiles
+	@grub2-mkrescue -o $(img_target) $(BUILD_DIR)/isofiles
 	@rm -r $(BUILD_DIR)/isofiles
 
 qemu: img

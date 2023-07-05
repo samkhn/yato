@@ -1,8 +1,12 @@
-TODO xkern
+* TODO setup acpi/aml?
+detect hardware w/ ACPI (video, file systems, network I/O)
+setup each device as a server that any binary can query and enqueue tasks to
 
-TODO: setup acpi/aml?
-TODO: setup gdb/serial port
+* TODO setup gdb and serial port
 
+* TODO replace VGA+GRUB2 (deprecated) with UEFI and PixelBuffer
+
+* TODO setup flashdrive build to flash to ThinkPad
 To setup a flash drive,
 zero out the partition table for the usb drive:
 $ dd if=/dev/zero of/=/dev/sdx bs=512 count=4
@@ -17,16 +21,11 @@ create grub.cfg file for the OSs on the host pc
 sudo grub-mkconfig --output=/mnt/usbp2/boot/grub/grub.cfg
 Check wiki.osdev.org/GRUB
 
-TODO: kernel_main
-sets up interrupt table
-sets up paging
-sets up scheduler
-detect hardware w/ ACPI (video, file systems, network I/O)
-	setup each device as a server that any binary can query and enqueue tasks to
+* TODO setup interrupt table
+Make sure you can get a dump of registers
 
-Print string/int (decimal and hex) to screen
-Setup serial port
-Have working interrupt/exception system that dumps registers
-Memory map and where data should be
-Alloc memory at runtime
+* TODO setup paging
 
+* TODO setup scheduler
+
+* TODO print string/int (decimal and hex) to screen
