@@ -10,7 +10,7 @@ OS = $(shell uname -s)
 BUILD_DIR := $(CURDIR)/build
 
 CC := gcc
-CFLAGS = -m32 -Wall -Werror -c -ffreestanding -O2 -lgcc
+CFLAGS = -Wall -m32 -c -ffreestanding -O2 -lgcc -I.
 
 LD := ld
 LDFLAGS := -melf_i386
@@ -21,10 +21,14 @@ ASFLAGS := --32
 kernel_target := $(BUILD_DIR)/yato-$(ARCH).bin
 img_target := $(BUILD_DIR)/yato-$(ARCH).iso
 
+lib_string := $(BUILD_DIR)/lib/string/string.o
+
+device_video_console := $(BUILD_DIR)/device/video/console/console.o
+
 kernel: $(kernel_target)
 
-$(kernel_target): binary_linker boot kernel_main
-	$(LD) $(LDFLAGS) -o $(kernel_target) -T arch/$(ARCH)/linker.ld $(BUILD_DIR)/*.o
+$(kernel_target): binary_linker boot kernel_main $(lib_string) $(device_video_console)
+	$(LD) $(LDFLAGS) -o $(kernel_target) $(lib_string) $(device_video_console) -T arch/$(ARCH)/linker.ld $(BUILD_DIR)/*.o
 
 binary_linker: arch/$(ARCH)/linker.ld
 
@@ -32,8 +36,16 @@ boot: arch/$(ARCH)/boot.s
 	@mkdir -p $(BUILD_DIR)
 	$(AS) $(ASFLAGS) arch/$(ARCH)/boot.s -o $(BUILD_DIR)/boot.o
 
+$(lib_string): lib/string/string.h lib/string/string.c
+	@mkdir -p $(BUILD_DIR)/lib/string
+	$(CC) $(CFLAGS) lib/string/string.c -o $(lib_string)
+
+$(device_video_console): device/video/console/console.h device/video/console/console.c
+	@mkdir -p $(BUILD_DIR)/device/video/console/
+	$(CC) $(CFLAGS) device/video/console/console.c -o $(device_video_console)
+
 kernel_main: arch/$(ARCH)/kernel_main.c
-	$(CC) $(CFLAGS) arch/$(ARCH)/kernel_main.c -I . -o $(BUILD_DIR)/kernel_main.o
+	$(CC) $(CFLAGS) arch/$(ARCH)/kernel_main.c -o $(BUILD_DIR)/kernel_main.o
 
 img: $(img_target)
 
