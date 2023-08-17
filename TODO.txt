@@ -1,0 +1,28 @@
+* TODO: better VGA output
+** TODO: setup Hardware Abstraction Layer
+* TODO: print ACPI table of all the devices the kernel can see
+* TODO: setup interrupt abstraction
+** TODO: instantiate interrupt table for x86
+* TODO: setup paging abstraction
+** TODO: instantiate paging for x86
+** Place kernel in 512 MB at top of address space, give the rest of it to userspace.
+
+Not sure about these:
+* TODO: setup timer abstraction
+** TODO: instaituate for x86 using PIT
+* TODO: setup scheduler
+** TODO: start talking to other CPUs that you can
+** TODO: more TODOs?
+
+-----
+
+VGA has a buffer location
+ methods to clear VGA buffer, read, write to it
+Display device should have pointer to VGA device underneath
+ methods to render text or image with data on how to interpret the data given
+Shell (can be graphical or terminal only) should have pointer to display device that it is managing.
+ shell should call display methods. send data to display render buffer. tell dispaly to then render it
+
+Keyboard presses enter, triggers interrupt, invokes interrupt handle of shell. How can we do this?
+
+TODO read this https://wiki.osdev.org/Higher_Half_x86_Bare_Bones
