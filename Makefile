@@ -42,9 +42,9 @@ boot: $(boot_target)
 $(boot_target): $(boot_processed)
 	@mkdir -p $(BUILD_DIR)/arch/$(ARCH)/boot
 	$(AS) $(ASFLAGS) $(boot_processed) -o $(boot_target)
-$(boot_processed): arch/$(ARCH)/boot.S
+$(boot_processed): arch/$(ARCH)/boot/boot.S
 	@mkdir -p $(BUILD_DIR)/arch/$(ARCH)/boot
-	$(CC) -E arch/$(ARCH)/boot.S -I. > $(boot_processed)
+	$(CC) -E arch/$(ARCH)/boot/boot.S -I. > $(boot_processed)
 
 kernel_main_target := $(BUILD_DIR)/kernel_main.o
 kernel_main: $(kernel_main_target)
