@@ -1,6 +1,10 @@
 #include "arch/x86_64/boot/console.h"
 #include "lib/string/string.h"
 
+const uint32_t kVgaConsoleDefaultWidth = 80;
+const uint32_t kVgaConsoleDefaultHeight = 25;
+const VGAConsole_Pixel *kVgaConsoleDefaultFBLocation = (VGAConsole_Pixel *)0xB8000;
+
 void VGAConsole_WriteChar(struct VGAConsole *console, char c) {
   const uint32_t i = VGAConsole_DimensionToIndex(console, console->cursor_x,
                                                  console->cursor_y);

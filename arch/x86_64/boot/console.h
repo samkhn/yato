@@ -1,5 +1,5 @@
-#ifndef YATO_DEVICE_VIDEO_CONSOLE_CONSOLE_H
-#define YATO_DEVICE_VIDEO_CONSOLE_CONSOLE_H
+#ifndef YATO_ARCH_X86_64_BOOT_CONSOLE_H
+#define YATO_ARCH_X86_64_BOOT_CONSOLE_H
 
 #include <stdint.h>
 
@@ -38,9 +38,9 @@ enum VGAColorCode {
   VGA_COLOR_WHITE = 15,
 };
 
-static const uint32_t kVgaConsoleDefaultWidth = 80;
-static const uint32_t kVgaConsoleDefaultHeight = 25;
-static const uint16_t *kVgaConsoleDefaultFBLocation = (uint16_t *)0xB8000;
+extern const uint32_t kVgaConsoleDefaultWidth;
+extern const uint32_t kVgaConsoleDefaultHeight;
+extern const VGAConsole_Pixel *kVgaConsoleDefaultFBLocation;
 
 inline VGAConsole_Color VGAConsole_EncodeColor(enum VGAColorCode fg,
                                                enum VGAColorCode bg) {
@@ -70,4 +70,4 @@ int VGAConsole_Write(struct VGAConsole *console, const char *data);
 
 void VGAConsole_ClearScreen(struct VGAConsole *console);
 
-#endif  // YATO_DEVICE_VIDEO_CONSOLE_CONSOLE_H
+#endif  // YATO_ARCH_X86_64_BOOT_CONSOLE_H

@@ -15,9 +15,9 @@ CFLAGS = -Wall -m32 -c -ffreestanding -O2 -I.
 LD := ld
 LDFLAGS := -melf_i386
 AS := as
-ASFLAGS := --32
+ASFLAGS := -32
 
-all: format img
+all: img
 
 # Libraries
 

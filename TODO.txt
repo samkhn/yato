@@ -1,6 +1,3 @@
-* TODO refactor: move device_video_console and vga related things into early boot environment under arch/x86/boot
-  They do not need to be shipped as the "main" device.
-
 * TODO: setup GDT and interrupt abstraction
 * TODO: Make space for the interrupt descriptor table
 * TODO: Tell the CPU where that space is
