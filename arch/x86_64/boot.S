@@ -1,5 +1,5 @@
 #define ASM_FILE 1
-#include "device/boot/multiboot/multiboot.h"
+#include "arch/x86_64/boot/multiboot.h"
 
 #define AOUT_KLUDGE 0  // Because are producing an ELF binary
 #define MULTIBOOT_HEADER_FLAGS MULTIBOOT_PAGE_ALIGNMENT | MULTIBOOT_MEMORY_INFO | MULTIBOOT_VIDEO_MODE

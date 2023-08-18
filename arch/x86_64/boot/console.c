@@ -1,4 +1,4 @@
-#include "device/video/console/console.h"
+#include "arch/x86_64/boot/console.h"
 #include "lib/string/string.h"
 
 void VGAConsole_WriteChar(struct VGAConsole *console, char c) {

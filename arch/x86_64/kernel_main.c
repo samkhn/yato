@@ -1,5 +1,5 @@
-#include "device/boot/multiboot/multiboot.h"
-#include "device/video/console/console.h"
+#include "arch/x86_64/boot/multiboot.h"
+#include "arch/x86_64/boot/console.h"
 
 void kernel_main(unsigned long magic, unsigned long mbaddr) {
   struct VGAConsole console;

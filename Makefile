@@ -20,30 +20,30 @@ ASFLAGS := --32
 all: format img
 
 # Libraries
+
 lib_string := $(BUILD_DIR)/lib/string/string.o
-libraries: $(lib_string)
 $(lib_string): lib/string/string.h lib/string/string.c
 	@mkdir -p $(BUILD_DIR)/lib/string
 	$(CC) $(CFLAGS) lib/string/string.c -o $(lib_string)
 # TODO: blob/opaque ID generator
 # TODO: key value store
+libraries: $(lib_string)
 
-# Device drivers
-device_video_console := $(BUILD_DIR)/device/video/console/console.o
-drivers: $(device_video_console)
-$(device_video_console): device/video/console/console.h device/video/console/console.c
-	@mkdir -p $(BUILD_DIR)/device/video/console/
-	$(CC) $(CFLAGS) device/video/console/console.c -o $(device_video_console)
+boot_console := $(BUILD_DIR)/arch/$(ARCH)/boot/console.o
+boot_console_driver: $(boot_console)
+$(boot_console): arch/$(ARCH)/boot/console.h arch/$(ARCH)/boot/console.c
+	@mkdir -p $(BUILD_DIR)/arch/$(ARCH)/boot
+	$(CC) $(CFLAGS) arch/$(ARCH)/boot/console.c -o $(boot_console)
 
 # Main kernel build artifacts
-boot_processed := $(BUILD_DIR)/boot.s
-boot_target := $(BUILD_DIR)/boot.o
+boot_processed := $(BUILD_DIR)/arch/$(ARCH)/boot/boot.s
+boot_target := $(BUILD_DIR)/arch/$(ARCH)/boot/boot.o
 boot: $(boot_target)
 $(boot_target): $(boot_processed)
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)/arch/$(ARCH)/boot
 	$(AS) $(ASFLAGS) $(boot_processed) -o $(boot_target)
 $(boot_processed): arch/$(ARCH)/boot.S
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)/arch/$(ARCH)/boot
 	$(CC) -E arch/$(ARCH)/boot.S -I. > $(boot_processed)
 
 kernel_main_target := $(BUILD_DIR)/kernel_main.o
@@ -54,8 +54,8 @@ $(kernel_main_target): arch/$(ARCH)/kernel_main.c
 kernel_target := $(BUILD_DIR)/yato-$(ARCH).bin
 kernel: $(kernel_target)
 # TODO: replace hard coded library and device drivers with list variables?
-$(kernel_target): arch/$(ARCH)/linker.ld boot kernel_main libraries drivers
-	$(LD) $(LDFLAGS) -o $(kernel_target) $(BUILD_DIR)/*.o $(lib_string) $(device_video_console) -T arch/$(ARCH)/linker.ld
+$(kernel_target): arch/$(ARCH)/linker.ld boot kernel_main libraries boot_console_driver
+	$(LD) $(LDFLAGS) -o $(kernel_target) $(boot_target) $(kernel_main_target) $(lib_string) $(boot_console) -T arch/$(ARCH)/linker.ld
 
 # Disk formats
 img_target := $(BUILD_DIR)/yato-$(ARCH).iso
