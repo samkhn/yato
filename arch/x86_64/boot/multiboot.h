@@ -81,6 +81,7 @@ struct MultibootHeader {
   multiboot_uint32_t height;
   multiboot_uint32_t depth;
 };
+typedef struct MultibootHeader MultibootHeader;
 
 struct MultibootAOutSymbolTable {
   multiboot_uint32_t tabsize;
@@ -88,6 +89,7 @@ struct MultibootAOutSymbolTable {
   multiboot_uint32_t addr;
   multiboot_uint32_t reserved;
 };
+typedef struct MultibootAOutSymbolTable MultibootAOutSymbolTable;
 
 struct MultibootElfSectionHeaderTable {
   multiboot_uint32_t num;
@@ -95,6 +97,7 @@ struct MultibootElfSectionHeaderTable {
   multiboot_uint32_t addr;
   multiboot_uint32_t shndex;
 };
+typedef struct MultibootElfSectionHeaderTable MultibootElfSectionHeaderTable;
 
 struct MultibootInfo {
   multiboot_uint32_t flags;
@@ -104,8 +107,8 @@ struct MultibootInfo {
   multiboot_uint32_t mods_count;
   multiboot_uint32_t mods_addr;
   union {
-    struct MultibootAOutSymbolTable aout_sym;
-    struct MultibootElfSectionHeaderTable elf_section;
+    MultibootAOutSymbolTable aout_sym;
+    MultibootElfSectionHeaderTable elf_section;
   } u;
 
   multiboot_uint32_t mmap_length;
@@ -158,6 +161,7 @@ struct MultibootColor {
   multiboot_uint8_t green;
   multiboot_uint8_t blue;
 };
+typedef struct MultibootColor MultibootColor;
 
 struct MultibootMmapEntry {
   multiboot_uint32_t size;
@@ -170,6 +174,7 @@ struct MultibootMmapEntry {
 #define MULTIBOOT_MEMORY_BADRAM 5
   multiboot_uint32_t type;
 } __attribute__((packed));
+typedef struct MultibootMmapEntry MultibootMmapEntry;
 
 struct MultibootModList {
   multiboot_uint32_t mod_start;
@@ -179,6 +184,7 @@ struct MultibootModList {
 
   multiboot_uint32_t pad;
 };
+typedef struct MultibootModList MultibootModList;
 
 struct MultibootApmInfo {
   multiboot_uint16_t version;
@@ -191,6 +197,7 @@ struct MultibootApmInfo {
   multiboot_uint16_t cseg_16_len;
   multiboot_uint16_t dseg_len;
 };
+typedef struct MultibootApmInfo MultibootApmInfo;
 
 #endif  // ASM_FILE
 

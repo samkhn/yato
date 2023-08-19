@@ -18,6 +18,7 @@ struct VGAConsole {
   int default_color;
   VGAConsole_Pixel *frame_buffer;
 };
+typedef struct VGAConsole VGAConsole;
 
 enum VGAColorCode {
   VGA_COLOR_BLACK = 0,
@@ -52,22 +53,22 @@ inline VGAConsole_Pixel VGAConsole_EncodePixel(unsigned char c,
   return (VGAConsole_Pixel)c | (VGAConsole_Pixel)color << 8;
 }
 
-inline uint32_t VGAConsole_DimensionToIndex(struct VGAConsole *console,
+inline uint32_t VGAConsole_DimensionToIndex(VGAConsole *console,
                                             uint32_t x, uint32_t y) {
   return y * console->screen_width + x;
 }
 
-void VGAConsole_Initialize(struct VGAConsole *console, int width, int height,
+void VGAConsole_Initialize(VGAConsole *console, int width, int height,
                            uint16_t *buffer, enum VGAColorCode fg,
                            enum VGAColorCode bg);
 
-void VGAConsole_WriteChar(struct VGAConsole *console, char c);
+void VGAConsole_WriteChar(VGAConsole *console, char c);
 
-int VGAConsole_WriteN(struct VGAConsole *console, const char *data,
+int VGAConsole_WriteN(VGAConsole *console, const char *data,
                       uint32_t len);
 
-int VGAConsole_Write(struct VGAConsole *console, const char *data);
+int VGAConsole_Write(VGAConsole *console, const char *data);
 
-void VGAConsole_ClearScreen(struct VGAConsole *console);
+void VGAConsole_ClearScreen(VGAConsole *console);
 
 #endif  // YATO_ARCH_X86_64_BOOT_CONSOLE_H
