@@ -62,6 +62,8 @@ void VGAConsole_Initialize(VGAConsole *console, int width, int height,
                            uint16_t *buffer, enum VGAColorCode fg,
                            enum VGAColorCode bg);
 
+int VGAConsole_WriteF(VGAConsole *console, const char *format, ...);
+
 void VGAConsole_WriteChar(VGAConsole *console, char c);
 
 int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len);

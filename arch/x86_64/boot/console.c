@@ -1,5 +1,4 @@
 #include "arch/x86_64/boot/console.h"
-
 #include "lib/string/string.h"
 
 const uint32_t kVgaConsoleDefaultWidth = 80;
@@ -17,6 +16,7 @@ void VGAConsole_WriteChar(VGAConsole *console, char c) {
     case '\r':
     case '\n':
       goto newline;
+      break;
     default:
       console->frame_buffer[i] =
           VGAConsole_EncodePixel(c, console->default_color);
@@ -52,10 +52,81 @@ void VGAConsole_Initialize(VGAConsole *console, int width, int height,
   VGAConsole_ClearScreen(console);
 }
 
-int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len) {
-  for (uint32_t i = 0; i < len; ++i) {
-    VGAConsole_WriteChar(console, data[i]);
+static void IntegerToArg(char *buf, int base, int d) {
+  char *p = buf;
+  unsigned long ud = d;
+  int divisor = 10;
+  if (base == 'd' && d < 0) {
+    *p++ = '-';
+    buf++;
+    ud = -d;
+  } else if (base == 'x')
+    divisor = 16;
+
+  do {
+    int r = ud % divisor;
+    *p++ = (r < 10) ? r + '0' : r + 'a' - 10;
+  } while (ud /= divisor);
+  *p = 0;
+  char *p1 = buf;
+  char *p2 = p - 1;
+  while (p1 < p2) {
+    char tmp = *p1;
+    *p1 = *p2;
+    *p2 = tmp;
+    p1++;
+    p2--;
   }
+}
+
+int VGAConsole_WriteF(VGAConsole *console, const char *format, ...) {
+  char **arg = (char **)&format;
+  int c;
+  char buf[20];
+  arg++;
+  while ((c = *format++) != 0) {
+    if (c != '%')
+      VGAConsole_WriteChar(console, c);
+    else {
+      char *p, *p2;
+      int pad0 = 0, pad = 0;
+      c = *format++;
+      if (c == '0') {
+        pad0 = 1;
+        c = *format++;
+      }
+      if (c >= '0' && c <= '9') {
+        pad = c - '0';
+        c = *format++;
+      }
+      switch (c) {
+        case 'd':
+        case 'u':
+        case 'x':
+          IntegerToArg(buf, c, *((int *)arg++));
+          p = buf;
+          goto string;
+          break;
+        case 's':
+          p = *arg++;
+          if (!p) p = "(null)";
+        string:
+          for (p2 = p; *p2; p2++) {
+          }
+          for (; p2 < p + pad; p2++)
+            VGAConsole_WriteChar(console, pad0 ? '0' : ' ');
+          while (*p) VGAConsole_WriteChar(console, *p++);
+          break;
+        default:
+          VGAConsole_WriteChar(console, *((int *)arg++));
+          break;
+      }
+    }
+  }
+}
+
+int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len) {
+  for (uint32_t i = 0; i < len; ++i) VGAConsole_WriteChar(console, data[i]);
   return len;
 }
 

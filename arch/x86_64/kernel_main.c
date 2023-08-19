@@ -13,6 +13,8 @@ void kernel_main(unsigned long magic, unsigned long mbaddr) {
   MultibootInfo *multiboot_info;
   multiboot_info = (struct MultibootInfo *)mbaddr;
   VGAConsole_Write(&console, "\n\nHello yato\n\n");
+  VGAConsole_WriteF(&console, "Multiboot header found at 0x%x\n",
+                   (unsigned)multiboot_info->mmap_addr);
   while (1) {
   }
 }
