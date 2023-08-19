@@ -155,6 +155,7 @@ struct MultibootInfo {
     };
   };
 };
+typedef struct MultibootInfo MultibootInfo;
 
 struct MultibootColor {
   multiboot_uint8_t red;

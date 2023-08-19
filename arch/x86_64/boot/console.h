@@ -53,8 +53,8 @@ inline VGAConsole_Pixel VGAConsole_EncodePixel(unsigned char c,
   return (VGAConsole_Pixel)c | (VGAConsole_Pixel)color << 8;
 }
 
-inline uint32_t VGAConsole_DimensionToIndex(VGAConsole *console,
-                                            uint32_t x, uint32_t y) {
+inline uint32_t VGAConsole_DimensionToIndex(VGAConsole *console, uint32_t x,
+                                            uint32_t y) {
   return y * console->screen_width + x;
 }
 
@@ -64,8 +64,7 @@ void VGAConsole_Initialize(VGAConsole *console, int width, int height,
 
 void VGAConsole_WriteChar(VGAConsole *console, char c);
 
-int VGAConsole_WriteN(VGAConsole *console, const char *data,
-                      uint32_t len);
+int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len);
 
 int VGAConsole_Write(VGAConsole *console, const char *data);
 
