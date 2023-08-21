@@ -15,11 +15,6 @@
 * TODO: jump to higher half of kernel
 * TODO: remove the lower half of the kernel
 
-* TODO: split VGA driver into display device driver with VGA output and Console driver
-* TODO: implement printing integers and floating point numbers (printf)
-* TODO: implement scrolling and a cursor for the console
-* TODO(main): print ACPI table of all the devices the kernel can see
-
 Key pattern: every device or subsystem is an actor with a queue.
 with channels, kernel just acts as a router between channel listeners.
 channels mpmc queue. channel stores opaque ids that are readers/writers.
