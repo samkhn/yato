@@ -80,49 +80,57 @@ static void IntegerToArg(char *buf, int base, int d) {
 }
 
 int VGAConsole_WriteF(VGAConsole *console, const char *format, ...) {
+  int count = 0;
   char **arg = (char **)&format;
-  int c;
-  char buf[20];
   arg++;
-  while ((c = *format++) != 0) {
-    if (c != '%')
-      VGAConsole_WriteChar(console, c);
-    else {
-      char *p, *p2;
-      int pad0 = 0, pad = 0;
-      c = *format++;
-      if (c == '0') {
-        pad0 = 1;
-        c = *format++;
+  char format_iter;
+  char buffer[20];
+  while ((format_iter = *format++) != 0) {
+    if (format_iter != '%') {
+      count += 1;
+      VGAConsole_WriteChar(console, format_iter);
+    } else {
+      char *buffer_iter;
+      char *buffer_end;
+      int zero_padding = 0;
+      int nonzero_padding = 0;
+      format_iter = *format++;
+      if (format_iter == '0') {
+        zero_padding = 1;
+        format_iter = *format++;
       }
-      if (c >= '0' && c <= '9') {
-        pad = c - '0';
-        c = *format++;
+      if (format_iter >= '0' && format_iter <= '9') {
+        nonzero_padding = format_iter - '0';
+        format_iter = *format++;
       }
-      switch (c) {
+      switch (format_iter) {
         case 'd':
         case 'u':
         case 'x':
-          IntegerToArg(buf, c, *((int *)arg++));
-          p = buf;
+          IntegerToArg(buffer, format_iter, *((int *)arg++));
+          buffer_iter = buffer;
           goto string;
           break;
         case 's':
-          p = *arg++;
-          if (!p) p = "(null)";
+          buffer_iter = *arg++;
+          if (!buffer_iter) buffer_iter = "(null)";
         string:
-          for (p2 = p; *p2; p2++) {
+          for (buffer_end = buffer_iter; *buffer_end; buffer_end++) {
           }
-          for (; p2 < p + pad; p2++)
-            VGAConsole_WriteChar(console, pad0 ? '0' : ' ');
-          while (*p) VGAConsole_WriteChar(console, *p++);
+          for (; buffer_end < buffer_iter + nonzero_padding; buffer_end++) {
+            count += 1;
+            VGAConsole_WriteChar(console, zero_padding ? '0' : ' ');
+          }
+          while (*buffer_iter) VGAConsole_WriteChar(console, *buffer_iter++);
           break;
         default:
+          count += 1;
           VGAConsole_WriteChar(console, *((int *)arg++));
           break;
       }
     }
   }
+  return count;
 }
 
 int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len) {
