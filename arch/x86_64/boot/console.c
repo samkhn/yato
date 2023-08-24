@@ -1,17 +1,17 @@
 #include "arch/x86_64/boot/console.h"
 #include "lib/string/string.h"
 
-const uint32_t kVgaConsoleDefaultWidth = 80;
-const uint32_t kVgaConsoleDefaultHeight = 25;
+const uint32_t VGA_CONSOLE_DEFAULT_WIDTH = 80;
+const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 25;
 // TODO: this hardcoded value only works if in protected mode once handed off
 // GNU Grub 2. Maybe we make this a configurable option if we ever support
 // multiple bootloaders
-const VGAConsole_Pixel *kVgaConsoleDefaultFBLocation =
-	(VGAConsole_Pixel *)0xB8000;
+const vga_console_pixel_t *VGA_CONSOLE_DEFAULT_FB_ADDR =
+	(vga_console_pixel_t *)0xB8000;
 
-void VGAConsole_WriteChar(VGAConsole *console, char c)
+void vga_console_printchar(vga_console_t *console, char c)
 {
-	const uint32_t i = VGAConsole_DimensionToIndex(
+	const uint32_t i = vga_console_dimension_to_index(
 		console, console->cursor_x, console->cursor_y);
 	switch (c) {
 	case '\r':
@@ -20,7 +20,7 @@ void VGAConsole_WriteChar(VGAConsole *console, char c)
 		break;
 	default:
 		console->frame_buffer[i] =
-			VGAConsole_EncodePixel(c, console->default_color);
+			vga_console_encode_pixel(c, console->default_color);
 		if (++console->cursor_x == console->screen_width) {
 newline:
 			console->cursor_x = 0;
@@ -31,32 +31,32 @@ newline:
 	}
 }
 
-void VGAConsole_ClearScreen(VGAConsole *console)
+void vga_console_clear(vga_console_t *console)
 {
 	for (int y = 0; y < console->screen_height; ++y) {
 		for (int x = 0; x < console->screen_width; ++x) {
 			const uint32_t i =
-				VGAConsole_DimensionToIndex(console, x, y);
-			console->frame_buffer[i] = VGAConsole_EncodePixel(
+				vga_console_dimension_to_index(console, x, y);
+			console->frame_buffer[i] = vga_console_encode_pixel(
 				' ', console->default_color);
 		}
 	}
 }
 
-void VGAConsole_Initialize(VGAConsole *console, int width, int height,
-			   uint16_t *buffer, enum VGAColorCode fg,
-			   enum VGAColorCode bg)
+void vga_console_init(vga_console_t *console, int width, int height,
+		      uint16_t *buffer, vga_color_code_t fg,
+		      vga_color_code_t bg)
 {
 	console->cursor_x = 0;
 	console->cursor_y = 0;
 	console->screen_width = width;
 	console->screen_height = height;
-	console->default_color = VGAConsole_EncodeColor(fg, bg);
+	console->default_color = vga_console_encode_color(fg, bg);
 	console->frame_buffer = buffer;
-	VGAConsole_ClearScreen(console);
+	vga_console_clear(console);
 }
 
-static void IntegerToArg(char *buf, int base, int d)
+static void itoa(char *buf, int base, int d)
 {
 	char *p = buf;
 	unsigned long ud = d;
@@ -84,7 +84,7 @@ static void IntegerToArg(char *buf, int base, int d)
 	}
 }
 
-int VGAConsole_WriteF(VGAConsole *console, const char *format, ...)
+int vga_console_printf(vga_console_t *console, const char *format, ...)
 {
 	int count = 0;
 	char **arg = (char **)&format;
@@ -94,7 +94,7 @@ int VGAConsole_WriteF(VGAConsole *console, const char *format, ...)
 	while ((format_iter = *format++) != 0) {
 		if (format_iter != '%') {
 			count += 1;
-			VGAConsole_WriteChar(console, format_iter);
+			vga_console_printchar(console, format_iter);
 		} else {
 			char *buffer_iter;
 			char *buffer_end;
@@ -113,8 +113,7 @@ int VGAConsole_WriteF(VGAConsole *console, const char *format, ...)
 			case 'd':
 			case 'u':
 			case 'x':
-				IntegerToArg(buffer, format_iter,
-					     *((int *)arg++));
+				itoa(buffer, format_iter, *((int *)arg++));
 				buffer_iter = buffer;
 				goto string;
 				break;
@@ -130,17 +129,17 @@ string:
 				     buffer_end < buffer_iter + nonzero_padding;
 				     buffer_end++) {
 					count += 1;
-					VGAConsole_WriteChar(
+					vga_console_printchar(
 						console,
 						zero_padding ? '0' : ' ');
 				}
 				while (*buffer_iter)
-					VGAConsole_WriteChar(console,
-							     *buffer_iter++);
+					vga_console_printchar(console,
+							      *buffer_iter++);
 				break;
 			default:
 				count += 1;
-				VGAConsole_WriteChar(console, *((int *)arg++));
+				vga_console_printchar(console, *((int *)arg++));
 				break;
 			}
 		}
@@ -148,14 +147,14 @@ string:
 	return count;
 }
 
-int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len)
+int vga_console_printn(vga_console_t *console, const char *data, uint32_t len)
 {
 	for (uint32_t i = 0; i < len; ++i)
-		VGAConsole_WriteChar(console, data[i]);
+		vga_console_printchar(console, data[i]);
 	return len;
 }
 
-int VGAConsole_Write(VGAConsole *console, const char *data)
+int vga_console_print(vga_console_t *console, const char *data)
 {
-	return VGAConsole_WriteN(console, data, strlen(data));
+	return vga_console_printn(console, data, strlen(data));
 }

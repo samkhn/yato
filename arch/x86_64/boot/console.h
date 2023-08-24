@@ -5,22 +5,22 @@
 
 #include "lib/string/string.h"
 
-typedef uint8_t VGAConsole_Color;
-typedef uint16_t VGAConsole_Pixel;
+typedef uint8_t vga_console_color_t;
+typedef uint16_t vga_console_pixel_t;
 
 // Top left corner of screen is considered (0, 0)
 // Bottom right corner of screen is considered (x, y)
-struct VGAConsole {
+struct vga_console {
 	int cursor_x;
 	int cursor_y;
 	int screen_width;
 	int screen_height;
 	int default_color;
-	VGAConsole_Pixel *frame_buffer;
+	vga_console_pixel_t *frame_buffer;
 };
-typedef struct VGAConsole VGAConsole;
+typedef struct vga_console vga_console_t;
 
-enum VGAColorCode {
+enum vga_color_code {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
 	VGA_COLOR_GREEN = 2,
@@ -38,41 +38,42 @@ enum VGAColorCode {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
+typedef enum vga_color_code vga_color_code_t;
 
-extern const uint32_t kVgaConsoleDefaultWidth;
-extern const uint32_t kVgaConsoleDefaultHeight;
-extern const VGAConsole_Pixel *kVgaConsoleDefaultFBLocation;
+extern const uint32_t VGA_CONSOLE_DEFAULT_WIDTH;
+extern const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT;
+extern const vga_console_pixel_t *VGA_CONSOLE_DEFAULT_FB_ADDR;
 
-inline VGAConsole_Color VGAConsole_EncodeColor(enum VGAColorCode fg,
-					       enum VGAColorCode bg)
+inline vga_console_color_t vga_console_encode_color(enum vga_color_code fg,
+						    enum vga_color_code bg)
 {
 	return fg | bg << 4;
 }
 
-inline VGAConsole_Pixel VGAConsole_EncodePixel(unsigned char c,
-					       VGAConsole_Color color)
+inline vga_console_pixel_t vga_console_encode_pixel(unsigned char c,
+						    vga_console_color_t color)
 {
-	return (VGAConsole_Pixel)c | (VGAConsole_Pixel)color << 8;
+	return (vga_console_pixel_t)c | (vga_console_pixel_t)color << 8;
 }
 
-inline uint32_t VGAConsole_DimensionToIndex(VGAConsole *console, uint32_t x,
-					    uint32_t y)
+inline uint32_t vga_console_dimension_to_index(vga_console_t *console,
+					       uint32_t x, uint32_t y)
 {
 	return y * console->screen_width + x;
 }
 
-void VGAConsole_Initialize(VGAConsole *console, int width, int height,
-			   uint16_t *buffer, enum VGAColorCode fg,
-			   enum VGAColorCode bg);
+void vga_console_init(vga_console_t *console, int width, int height,
+		      uint16_t *buffer, enum vga_color_code fg,
+		      enum vga_color_code bg);
 
-int VGAConsole_WriteF(VGAConsole *console, const char *format, ...);
+int vga_console_printf(vga_console_t *console, const char *format, ...);
 
-void VGAConsole_WriteChar(VGAConsole *console, char c);
+void vga_console_printchar(vga_console_t *console, char c);
 
-int VGAConsole_WriteN(VGAConsole *console, const char *data, uint32_t len);
+int vga_console_printn(vga_console_t *console, const char *data, uint32_t len);
 
-int VGAConsole_Write(VGAConsole *console, const char *data);
+int vga_console_print(vga_console_t *console, const char *data);
 
-void VGAConsole_ClearScreen(VGAConsole *console);
+void vga_console_clear(vga_console_t *console);
 
 #endif // YATO_ARCH_X86_64_BOOT_CONSOLE_H
