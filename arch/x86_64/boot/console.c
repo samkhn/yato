@@ -1,5 +1,4 @@
 #include "arch/x86_64/boot/console.h"
-#include "lib/string/string.h"
 
 const uint32_t VGA_CONSOLE_DEFAULT_WIDTH = 80;
 const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 25;
@@ -8,6 +7,114 @@ const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 25;
 // multiple bootloaders
 const vga_console_pixel_t *VGA_CONSOLE_DEFAULT_FB_ADDR =
 	(vga_console_pixel_t *)0xB8000;
+
+static void itoa(char *buf, int base, int d);
+
+static int BOOT_CONSOLE_INIT = 0;
+static vga_console_t BOOT_CONSOLE;
+
+vga_console_color_t vga_console_encode_color(enum vga_color_code fg,
+					     enum vga_color_code bg)
+{
+	return fg | bg << 4;
+}
+
+vga_console_pixel_t vga_console_encode_pixel(unsigned char c,
+					     vga_console_color_t color)
+{
+	return (vga_console_pixel_t)c | (vga_console_pixel_t)color << 8;
+}
+
+uint32_t vga_console_dimension_to_index(vga_console_t *console, uint32_t x,
+					uint32_t y)
+{
+	return y * console->screen_width + x;
+}
+
+int bprintf(const char *format, ...)
+{
+	if (!BOOT_CONSOLE_INIT) {
+		vga_console_init(
+			&BOOT_CONSOLE, VGA_CONSOLE_DEFAULT_WIDTH,
+			VGA_CONSOLE_DEFAULT_HEIGHT,
+			(vga_console_pixel_t *)VGA_CONSOLE_DEFAULT_FB_ADDR,
+			VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+		BOOT_CONSOLE_INIT = 1;
+	}
+	int count = 0;
+	char **arg = (char **)&format;
+	arg++;
+	char format_iter;
+	char buffer[20];
+	while ((format_iter = *format++) != 0) {
+		if (format_iter != '%') {
+			count += 1;
+			vga_console_printchar(&BOOT_CONSOLE, format_iter);
+		} else {
+			char *buffer_iter;
+			char *buffer_end;
+			int zero_padding = 0;
+			int nonzero_padding = 0;
+			format_iter = *format++;
+			if (format_iter == '0') {
+				zero_padding = 1;
+				format_iter = *format++;
+			}
+			if (format_iter >= '0' && format_iter <= '9') {
+				nonzero_padding = format_iter - '0';
+				format_iter = *format++;
+			}
+			switch (format_iter) {
+			case 'd':
+			case 'u':
+			case 'x':
+				itoa(buffer, format_iter, *((int *)arg++));
+				buffer_iter = buffer;
+				goto string;
+				break;
+			case 's':
+				buffer_iter = *arg++;
+				if (!buffer_iter)
+					buffer_iter = "(null)";
+string:
+				for (buffer_end = buffer_iter; *buffer_end;
+				     buffer_end++) {
+				}
+				for (;
+				     buffer_end < buffer_iter + nonzero_padding;
+				     buffer_end++) {
+					count += 1;
+					vga_console_printchar(
+						&BOOT_CONSOLE,
+						zero_padding ? '0' : ' ');
+				}
+				while (*buffer_iter)
+					vga_console_printchar(&BOOT_CONSOLE,
+							      *buffer_iter++);
+				break;
+			default:
+				count += 1;
+				vga_console_printchar(&BOOT_CONSOLE,
+						      *((int *)arg++));
+				break;
+			}
+		}
+	}
+	return count;
+}
+
+int bprint(const char *data)
+{
+	if (!BOOT_CONSOLE_INIT) {
+		vga_console_init(
+			&BOOT_CONSOLE, VGA_CONSOLE_DEFAULT_WIDTH,
+			VGA_CONSOLE_DEFAULT_HEIGHT,
+			(vga_console_pixel_t *)VGA_CONSOLE_DEFAULT_FB_ADDR,
+			VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+		BOOT_CONSOLE_INIT = 1;
+	}
+	return vga_console_printn(&BOOT_CONSOLE, data, strlen(data));
+}
 
 void vga_console_printchar(vga_console_t *console, char c)
 {
@@ -84,77 +191,9 @@ static void itoa(char *buf, int base, int d)
 	}
 }
 
-int vga_console_printf(vga_console_t *console, const char *format, ...)
-{
-	int count = 0;
-	char **arg = (char **)&format;
-	arg++;
-	char format_iter;
-	char buffer[20];
-	while ((format_iter = *format++) != 0) {
-		if (format_iter != '%') {
-			count += 1;
-			vga_console_printchar(console, format_iter);
-		} else {
-			char *buffer_iter;
-			char *buffer_end;
-			int zero_padding = 0;
-			int nonzero_padding = 0;
-			format_iter = *format++;
-			if (format_iter == '0') {
-				zero_padding = 1;
-				format_iter = *format++;
-			}
-			if (format_iter >= '0' && format_iter <= '9') {
-				nonzero_padding = format_iter - '0';
-				format_iter = *format++;
-			}
-			switch (format_iter) {
-			case 'd':
-			case 'u':
-			case 'x':
-				itoa(buffer, format_iter, *((int *)arg++));
-				buffer_iter = buffer;
-				goto string;
-				break;
-			case 's':
-				buffer_iter = *arg++;
-				if (!buffer_iter)
-					buffer_iter = "(null)";
-string:
-				for (buffer_end = buffer_iter; *buffer_end;
-				     buffer_end++) {
-				}
-				for (;
-				     buffer_end < buffer_iter + nonzero_padding;
-				     buffer_end++) {
-					count += 1;
-					vga_console_printchar(
-						console,
-						zero_padding ? '0' : ' ');
-				}
-				while (*buffer_iter)
-					vga_console_printchar(console,
-							      *buffer_iter++);
-				break;
-			default:
-				count += 1;
-				vga_console_printchar(console, *((int *)arg++));
-				break;
-			}
-		}
-	}
-	return count;
-}
-
 int vga_console_printn(vga_console_t *console, const char *data, uint32_t len)
 {
 	for (uint32_t i = 0; i < len; ++i)
 		vga_console_printchar(console, data[i]);
 	return len;
-}
-
-int vga_console_print(vga_console_t *console, const char *data)
-{
-	return vga_console_printn(console, data, strlen(data));
 }

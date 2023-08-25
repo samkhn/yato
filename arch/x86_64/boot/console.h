@@ -3,7 +3,10 @@
 
 #include <stdint.h>
 
-#include "lib/string/string.h"
+#include "lib/string.h"
+
+int bprintf(const char *format, ...);
+int bprint(const char *data);
 
 typedef uint8_t vga_console_color_t;
 typedef uint16_t vga_console_pixel_t;
@@ -44,35 +47,22 @@ extern const uint32_t VGA_CONSOLE_DEFAULT_WIDTH;
 extern const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT;
 extern const vga_console_pixel_t *VGA_CONSOLE_DEFAULT_FB_ADDR;
 
-inline vga_console_color_t vga_console_encode_color(enum vga_color_code fg,
-						    enum vga_color_code bg)
-{
-	return fg | bg << 4;
-}
+vga_console_color_t vga_console_encode_color(enum vga_color_code fg,
+					     enum vga_color_code bg);
 
-inline vga_console_pixel_t vga_console_encode_pixel(unsigned char c,
-						    vga_console_color_t color)
-{
-	return (vga_console_pixel_t)c | (vga_console_pixel_t)color << 8;
-}
+vga_console_pixel_t vga_console_encode_pixel(unsigned char c,
+					     vga_console_color_t color);
 
-inline uint32_t vga_console_dimension_to_index(vga_console_t *console,
-					       uint32_t x, uint32_t y)
-{
-	return y * console->screen_width + x;
-}
+uint32_t vga_console_dimension_to_index(vga_console_t *console, uint32_t x,
+					uint32_t y);
 
 void vga_console_init(vga_console_t *console, int width, int height,
 		      uint16_t *buffer, enum vga_color_code fg,
 		      enum vga_color_code bg);
 
-int vga_console_printf(vga_console_t *console, const char *format, ...);
-
 void vga_console_printchar(vga_console_t *console, char c);
 
 int vga_console_printn(vga_console_t *console, const char *data, uint32_t len);
-
-int vga_console_print(vga_console_t *console, const char *data);
 
 void vga_console_clear(vga_console_t *console);
 

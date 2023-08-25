@@ -36,8 +36,8 @@ stack_top:
 
 	// Bootloader will jump here
 .section .text
-	.global	_start
-	.type	_start, @function
+.global	_start
+.type	_start, @function
 _start:
 	mov	$stack_top,	%esp
 	// TODO: setup paging
