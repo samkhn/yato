@@ -104,6 +104,9 @@ qemu-graphical: $(img)
 	$(QEMU) -cdrom $(img) -vga std \
 		-no-reboot -d int,cpu_reset -m 512M
 
+debug-server: $(img)
+	$(QEMU) -nographic -vga std -s -S -cdrom $(img) -m 512M &
+
 clean:
 	@test -d $(BUILD_DIR) && rm -rf $(BUILD_DIR) || true
 
