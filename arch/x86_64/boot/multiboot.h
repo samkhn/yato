@@ -176,7 +176,7 @@ struct multiboot_memory_map_entry {
 #define MULTIBOOT_MEMORY_BADRAM 5
 	multiboot_uint32_t type;
 } __attribute__((packed));
-typedef struct multiboot_memory_map_entry multiboot_memory_map_entry_t;
+typedef struct multiboot_memory_map_entry multiboot_memory_map_t;
 
 struct multiboot_module_list {
 	multiboot_uint32_t mod_start;
