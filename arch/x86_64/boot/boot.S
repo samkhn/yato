@@ -1,16 +1,16 @@
-#define ASM_FILE 1
+// boot.S
+
+#define ASM_FILE 1  // Used by preprocessor to exclude struct defintions from multiboot.h
 #include "arch/x86_64/boot/multiboot.h"
 
-#define AOUT_KLUDGE 0  // Because we are producing an ELF binary
-#define MULTIBOOT_HEADER_FLAGS MULTIBOOT_PAGE_ALIGNMENT | MULTIBOOT_MEMORY_INFO
+#define MULTIBOOT_HEADER_FLAGS MULTIBOOT_PAGE_ALIGNMENT | MULTIBOOT_MEMORY_INFO | MULTIBOOT_VIDEO_MODE
 
 	.set FLAGS,	MULTIBOOT_HEADER_FLAGS
 	.set MAGIC,	MULTIBOOT_HEADER_MAGIC
 	.set CHECKSUM,	-(MAGIC + FLAGS)
-
 .section .multiboot
 	.align	MULTIBOOT_HEADER_ALIGNMENT
-	// Header
+	// Header, needed for validation
 	.long 	MAGIC
 	.long 	FLAGS
 	.long 	CHECKSUM
@@ -21,11 +21,12 @@
 	.long 	0
 	.long 	0
 	// Video info
-	// TODO: make this configurable at build time
-	.long 	1  // 1 means legacy vga mode. TODO: can't seem to get framebuffer (mode 0) working over SSH so for now it'll be set to VGA legacy.
-	.long 	1024
-	.long 	768
-	.long 	32
+	// TODO: make this configurable at build time.
+	// First long, 1, means legacy vga mode. 0 means use new fancy frambuffer (which we are not setup for)
+	.long 	1
+	// .long 	1024
+	// .long 	768
+	// .long 	32
 
 	// bootstrap stack creation
 .section .bss
@@ -44,12 +45,11 @@ _start:
 	pushl	$0
 	popf
 
-	pushl	%ebx
-	pushl	%eax
+	pushl	%ebx  // Multiboot header address
+	pushl	%eax  // Multiboot magic number
 
 	call	kernel_main
 	cli
-
 
 // TODO: assert that .size isn't too large within the linker script
 .size _start, . - _start

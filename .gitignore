@@ -1,2 +1,4 @@
 build.sh
 build
+.cache
+compile_commands.json

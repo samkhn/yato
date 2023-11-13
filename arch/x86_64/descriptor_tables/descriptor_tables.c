@@ -53,7 +53,7 @@ void init_idt()
 {
 	IDT_POINTER.limit = (uint16_t)sizeof(idt_entry_t) * IDT_ENTRY_COUNT - 1;
 	IDT_POINTER.base = (uint32_t)&IDT_ENTRIES;
-	//memset(&IDT_ENTRIES, 0, sizeof(idt_entry_t) * 256);
+	memset(&IDT_ENTRIES, 0, sizeof(idt_entry_t) * 256);
 	set_idt_gate(0, (uint32_t)isr0, 0x08, 0x8E);
 	set_idt_gate(1, (uint32_t)isr1, 0x08, 0x8E);
 	set_idt_gate(2, (uint32_t)isr2, 0x08, 0x8E);

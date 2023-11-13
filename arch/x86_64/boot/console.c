@@ -1,4 +1,5 @@
 #include "arch/x86_64/boot/console.h"
+#include "lib/string.h"
 
 const uint32_t VGA_CONSOLE_DEFAULT_WIDTH = 80;
 const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 25;

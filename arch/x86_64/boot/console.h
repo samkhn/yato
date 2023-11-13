@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "lib/string.h"
-
 int bprintf(const char *format, ...);
 int bprint(const char *data);
 
