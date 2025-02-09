@@ -17,9 +17,26 @@ Please have the following programs in your path:
 * (if you want to send a PR) clang-format
 
 ## Run
+
 ```bash
 $ make qemu
 ```
+
+Some things you can customize:
+
+* BUILD_DIR e.g.
+
+``` bash
+$ make BUILD_DIR=/store/artifacts/here qemu
+```
+
+* QEMUSCREEN e.g.
+
+``` bash
+$ make QEMUSCREEN=-nographic qemu
+```
+
+If you `-display curses`, please install libcurses.
 
 ### Possible issues
 

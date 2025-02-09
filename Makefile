@@ -4,8 +4,16 @@ export SHELL := /bin/bash -o pipefail
 
 # TODO(reach): aarch64 (ARM)
 ARCH := x86_64
+
 QEMU := qemu-system-$(ARCH)
-QEMUFLAGS := -no-reboot -no-shutdown -d int,cpu_reset
+
+# You have a few options when displaying:
+# -vga std  # to use system window manager/SDL
+# -display curses  # libncurses
+# -nographic  # command line only
+# If you use curses or nographic, it's recommended you disable interrupt and cpu_reset logging (remove -d int,cpu_reset)
+QEMUFLAGS := -no-reboot -no-shutdown # -d int,cpu_reset
+QEMUSCREEN := -display curses
 
 OS = $(shell uname -s)
 BUILD_DIR := $(CURDIR)/build
@@ -95,11 +103,11 @@ $(img): $(kernel) arch/$(ARCH)/grub.cfg
 	@mkdir -p $(BUILD_DIR)/isofiles/boot/grub
 	@cp $(kernel) $(BUILD_DIR)/isofiles/boot/kernel.bin
 	@cp arch/$(ARCH)/grub.cfg $(BUILD_DIR)/isofiles/boot/grub
-	@grub2-mkrescue -o $(img) $(BUILD_DIR)/isofiles
+	@grub-mkrescue -o $(img) $(BUILD_DIR)/isofiles
 	@rm -r $(BUILD_DIR)/isofiles
 
 qemu: $(img)
-	$(QEMU) $(QEMUFLAGS) -cdrom $(img) -vga std
+	$(QEMU) $(QEMUFLAGS) -cdrom $(img) $(QEMUSCREEN)
 
 clean:
 	@test -d $(BUILD_DIR) && rm -rf $(BUILD_DIR) || true
