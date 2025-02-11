@@ -64,4 +64,7 @@ int vga_console_printn(vga_console_t *console, const char *data, uint32_t len);
 
 void vga_console_clear(vga_console_t *console);
 
+// for testing only
+void test_bprintf(int halt);
+
 #endif // YATO_ARCH_X86_64_BOOT_CONSOLE_H

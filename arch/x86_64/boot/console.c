@@ -2,7 +2,7 @@
 #include "lib/string.h"
 
 const uint32_t VGA_CONSOLE_DEFAULT_WIDTH = 80;
-const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 25;
+const uint32_t VGA_CONSOLE_DEFAULT_HEIGHT = 24;
 // TODO: this hardcoded value only works if in protected mode once handed off
 // GNU Grub 2. Maybe we make this a configurable option if we ever support
 // multiple bootloaders
@@ -46,7 +46,7 @@ int bprintf(const char *format, ...)
 	char **arg = (char **)&format;
 	arg++;
 	char format_iter;
-	char buffer[20];
+	char buffer[200];
 	while ((format_iter = *format++) != 0) {
 		if (format_iter != '%') {
 			count += 1;
@@ -197,4 +197,18 @@ int vga_console_printn(vga_console_t *console, const char *data, uint32_t len)
 	for (uint32_t i = 0; i < len; ++i)
 		vga_console_printchar(console, data[i]);
 	return len;
+}
+
+// testing
+void test_bprintf(int halt)
+{
+	bprintf("Testing print\n");
+	bprintf("Integer: %d\n", 10);
+	bprintf("Negative integer: %d\n", -10);
+	bprintf("Unsigned int: %u\n", 15);
+	bprintf("Hex: 0x%x\n", 0x12);
+	bprintf("String: %s\n", "this is a test, 1, -1");
+	if (halt)
+		while (1) {
+		}
 }

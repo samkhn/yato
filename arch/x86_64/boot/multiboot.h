@@ -55,10 +55,10 @@
 
 #ifndef ASM_FILE
 
-typedef unsigned char multiboot_uint8_t;
-typedef unsigned short multiboot_uint16_t;
-typedef unsigned int multiboot_uint32_t;
-typedef unsigned long long multiboot_uint64_t;
+typedef uint8_t multiboot_uint8_t;
+typedef uint16_t multiboot_uint16_t;
+typedef uint32_t multiboot_uint32_t;
+typedef uint64_t multiboot_uint64_t;
 
 struct multiboot_header {
 	// Must be MULTIBOOT_MAGIC - see above.
@@ -104,6 +104,7 @@ struct multiboot_info {
 	multiboot_uint32_t flags;
 	multiboot_uint32_t mem_lower;
 	multiboot_uint32_t mem_upper;
+	multiboot_uint32_t boot_device;
 	multiboot_uint32_t cmdline;
 	multiboot_uint32_t mods_count;
 	multiboot_uint32_t mods_addr;

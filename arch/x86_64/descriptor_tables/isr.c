@@ -3,5 +3,5 @@
 
 void isr_handler(interrupt_state_t *registers)
 {
-	bprintf("received interrupts: %x\n", registers->interrupt_number);
+	bprintf("received interrupts: %d\n", registers->interrupt_number);
 }
